@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_login_task/signin.dart';
+import 'package:my_login_task/signup.dart';
 
 void main() {
   runApp(const MyWidget());
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-          backgroundColor: Color(0xFF3967D7),
+          backgroundColor: Color(0xFF1366F6),
           body: Stack(
             children: [
               Container(
@@ -83,18 +84,25 @@ class _MyAppState extends State<MyApp> {
                       SizedBox(
                         height: 150.0,
                       ),
-                      ClipOval(
-                        child:Image.asset(
-      'assets/bit.jpg',  // Your image path
+                      //ClipOval(
+                        Container(
+                          child: Image.asset(
+      'assets/Untitled design (1).png',  // Your image path
       fit: BoxFit.cover,    
       width: 300,
       height: 300,   // You can adjust the fit as needed
     ), 
-                      ),
+                     ),
                        SizedBox(
                         height: 150.0,
                       ),
-                      TextButton(onPressed: null, child: 
+                      TextButton(onPressed:  () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Signup()),
+                      );
+                      
+                    }, child: 
                       Container(
                         
                         width: 400,
@@ -106,7 +114,7 @@ class _MyAppState extends State<MyApp> {
                  alignment: Alignment.center,
                         child: Text('SIGN UP',
                         style: TextStyle(
-                          color: Color(0xFF3967D7),
+                          color: Color(0xFF1366F6),
                           fontSize: 15.0,
                           fontWeight: FontWeight.bold,
 

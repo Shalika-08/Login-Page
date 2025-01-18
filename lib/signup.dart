@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_login_task/signin.dart';
+import 'package:my_login_task/main.dart';
 
 void main() {
   runApp(const Signup());
@@ -13,10 +14,10 @@ class CustomShapeClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, 0);
-    path.lineTo(0, size.height - 130); // Clip the bottom 40 pixels
+    path.lineTo(0, size.height - 80); // Clip the bottom 40 pixels
     path.quadraticBezierTo(
-      size.width / 2, size.height, // Curve point for bottom-center
-      size.width, size.height - 130, // Clip the bottom 40 pixels
+      size.width / 2, size.height + 70, // Curve point for bottom-center
+      size.width, size.height - 80, // Clip the bottom 40 pixels
     );
     path.lineTo(size.width, 0); // End the shape at the top-right corner
     path.close();
@@ -48,23 +49,56 @@ class _SignupState extends State<Signup> {
                   alignment: Alignment.topCenter,
                  child:     Column(
           children: [
-             ClipPath(
+        Stack(
+            children: [
+                ClipPath(
             clipper: CustomShapeClipper(),
             child: Container(
+              padding: EdgeInsets.symmetric(vertical: 20.0),
              
               height: 250,
-             color: Color(0xFF3967D7),
+              
+              
+             
+             decoration: BoxDecoration(
+                  color: Color(0xFF1366F6),
+                  image: DecorationImage(image: AssetImage('assets/Untitled design (1).png',
+                  
+                  ),
+                  fit: BoxFit.contain,
+                  //alignment: Alignment.center,
+                  
+                  )
+             ),
+                                 
+    
             ),
-          ),
+            
+          )
+          ,
+          Positioned(child: IconButton(onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyWidget()),
+    );
+  }, icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: 30.0,
+                      ),))
+            ]
+           
+
+           ),
             SizedBox(
-                        height: 20.0,
+                        height: 60.0,
                       ),
         Text('Create Account',
         style: TextStyle(
                           fontFamily: 'Cambria',
                           fontSize: 20.0,
                           
-                           color: Color(0xFF3967D7),
+                           color: Color(0xFF1366F6),
                            fontWeight: FontWeight.bold,
         ),
         ),
@@ -78,7 +112,7 @@ class _SignupState extends State<Signup> {
   
   decoration: InputDecoration(
     hintText: "Shalika Manoharan",
-    prefixIcon: Icon(Icons.person,color:Color(0xFF3967D7) ,),
+    prefixIcon: Icon(Icons.person,color:Color(0xFF1366F6) ,),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20.0),
       borderSide: BorderSide(color: Colors.grey, width: 2.0),
@@ -99,7 +133,7 @@ class _SignupState extends State<Signup> {
   
   decoration: InputDecoration(
     hintText: "shalika0801@gmail.com",
-    prefixIcon: Icon(Icons.mail,color:Color(0xFF3967D7) ,),
+    prefixIcon: Icon(Icons.mail,color:Color(0xFF1366F6) ,),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20.0),
       borderSide: BorderSide(color: Colors.grey, width: 2.0),
@@ -122,6 +156,7 @@ class _SignupState extends State<Signup> {
   
   decoration: InputDecoration(
     hintText: "Password",
+     
 
     
     prefixIcon: Icon(Icons.lock,color:Colors.grey ,),
@@ -170,7 +205,7 @@ Container(
     
     children: [
         Checkbox(
-    activeColor: Color(0xFF3967D7),
+    activeColor: Color(0xFF1366F6),
     checkColor:Colors.white,
     tristate: true,
 
@@ -190,7 +225,7 @@ Container(
   //SizedBox(width: 180,),
    
 Text('Terms and Conditions',
-  style: TextStyle(fontSize: 18.0,color:Color(0xFF3967D7),
+  style: TextStyle(fontSize: 18.0,color:Color(0xFF1366F6),
   fontWeight: FontWeight.bold,
 
   
@@ -204,7 +239,7 @@ Text('Terms and Conditions',
 
 
   SizedBox(
-                       height: 80.0,
+                       height: 60.0,
                       ),
                       TextButton(onPressed: null, child: 
                       Container(
@@ -212,7 +247,7 @@ Text('Terms and Conditions',
                         width: 400,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: Color(0xFF3967D7),
+                          color: Color(0xFF1366F6),
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                  alignment: Alignment.center,
@@ -259,7 +294,7 @@ Text('Terms and Conditions',
                     
                       child: Text('Sign In from here',
                       style: TextStyle(
-                        color: Color(0xFF3967D7),
+                        color: Color(0xFF1366F6),
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                       ),
