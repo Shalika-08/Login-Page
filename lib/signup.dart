@@ -12,6 +12,7 @@ void main() {
 TextEditingController nametxt = TextEditingController();
 TextEditingController emailtxt = TextEditingController();
 TextEditingController passwrd = TextEditingController();
+TextEditingController repeatpasswd = TextEditingController();
 
 /*Future<void> postData() async {
   var data = {
@@ -142,6 +143,8 @@ bool _validateName = false;
 bool _validateEmail = false;
 bool _validatePassword = false;
 bool _validateRepeatPassword = false;
+bool _validateConfirmPassword = false;
+bool _passwordsMatch = true;
 
 // Custom clipper to define the shape
 class CustomShapeClipper extends CustomClipper<Path> {
@@ -307,12 +310,15 @@ class _SignupState extends State<Signup> {
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                       child: TextFormField(
+                        controller: repeatpasswd,
                         style: TextStyle(color: Colors.grey),
                         decoration: InputDecoration(
                           hintText: "Repeat Password",
-                          errorText: _validateRepeatPassword
-                              ? 'Kindly Enter password'
-                              : null,
+                          errorText: _validateConfirmPassword
+                              ? 'Kindly confirm your password'
+                              : !_passwordsMatch
+                                  ? 'Passwords do not match'
+                                  : null,
                           prefixIcon: Icon(
                             Icons.lock,
                             color: Colors.grey,
@@ -372,11 +378,12 @@ class _SignupState extends State<Signup> {
                           _validateName = nametxt.text.isEmpty;
                           _validateEmail = emailtxt.text.isEmpty;
                           _validatePassword = passwrd.text.isEmpty;
-                          _validateRepeatPassword = passwrd.text.isEmpty;
+                          _validateRepeatPassword = repeatpasswd.text.isEmpty;
                           if (!_validateName &&
                               !_validateEmail &&
                               !_validateRepeatPassword &&
-                              !_validatePassword) {
+                              !_validatePassword &&
+                              passwrd.text == repeatpasswd) {
                             // Call the URL launcher function
                             insertRecord(
                               context,
@@ -384,6 +391,9 @@ class _SignupState extends State<Signup> {
                               emailtxt.text,
                               passwrd.text,
                             );
+                          } else if (passwrd.text != repeatpasswd) {
+                            showMessage(context, "Passwords do not match!",
+                                false); // Error message
                           } else {
                             showMessageBox(
                                 context, "Kindly Enter All Details..!!");
