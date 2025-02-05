@@ -4,6 +4,8 @@ import 'package:my_login_task/signup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:my_login_task/update.dart';
+
 void main() {
   runApp(const Signin());
 }
@@ -16,7 +18,7 @@ TextEditingController passwrd = TextEditingController();
 Future<void> checkLogin(BuildContext context, TextEditingController nametxt,
     TextEditingController passwrd) async {
   // URL to fetch data from
-  String url = 'http://192.168.10.132:8004/fetch-records/';
+  String url = 'http://192.168.10.131:8004/fetch-records/';
 
   try {
     // Sending GET request to fetch data
@@ -55,9 +57,12 @@ Future<void> checkLogin(BuildContext context, TextEditingController nametxt,
           }
 
           if (isValidUser) {
-            showMessage(context, "Signed In successfully!", true);
+            //showMessage(context, "Signed In successfully!", true);
+            showAnimatedSuccessDialog(context);
           } else {
             showMessage(context, "Invalid username or password!", false);
+            nametxt.clear();
+            passwrd.clear();
           }
         } else {
           showMessage(context, "No users found in the data!", false);
@@ -74,83 +79,72 @@ Future<void> checkLogin(BuildContext context, TextEditingController nametxt,
   }
 }
 
-/*Future<void> checkLogin(BuildContext context, TextEditingController nametxt,
-    TextEditingController passwrd) async {
-  // Using GET request
-  String url =
-      'http://192.168.10.132:8004/fetch-records/?name=${nametxt.text}&password=${passwrd.text}';
-
-  try {
-    // Send GET request with query parameters
-    var response = await http.get(
-      Uri.parse(url),
-    );
-
-    // Debugging: Print response status and body
-    print("Response Status: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      if (data['status'] == 'success') {
-        showMessage(context, "Signed In successfully!", true);
-      } else {
-        showMessage(context, "Invalid username or password!", false);
-      }
-    } else {
-      showMessage(context,
-          "Failed to fetch data. Status: ${response.statusCode}", false);
-    }
-  } catch (e) {
-    showMessage(context, "Error: $e", false);
-  }
-}*/
-
-/*Future<void> checkLogin(
-    BuildContext context, String nametxt, String passwrd) async {
-  String url = 'http://192.168.10.132:8004/fetch-records/';
-
-  try {
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        "Content-Type":
-            "application/json", // Set to application/json for JSON format
-        // If your API needs authentication, add the token here
-        // "Authorization": "Bearer YOUR_TOKEN_HERE"
-      },
-      body: json.encode({
-        'username': nametxt,
-        'password': passwrd,
-      }),
-    );
-
-    // Debugging: Print the response status and headers
-    print("Response Status: ${response.statusCode}");
-    print("Response Headers: ${response.headers}");
-    print("Response Body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-
-      if (data.isNotEmpty) {
-        showMessage(context, "Signed In successfully!", true);
-      } else {
-        showMessage(context, "Invalid username or password!", false);
-      }
-    } else {
-      showMessage(context,
-          "Failed to Fetch Data. Status: ${response.statusCode}", false);
-    }
-  } catch (e) {
-    showMessage(context, "Error: $e", false);
-  }
-}*/
+void showAnimatedSuccessDialog(BuildContext context) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: "Success Dialog",
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black26, blurRadius: 10, spreadRadius: 2),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                const SizedBox(height: 10),
+                const Text(
+                  "Signed In Successfully!",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Update()), // Navigate to next screen
+                    );
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (context, anim, secondaryAnim, child) {
+      return ScaleTransition(
+        scale: CurvedAnimation(parent: anim, curve: Curves.elasticOut),
+        child: FadeTransition(
+          opacity: anim,
+          child: child,
+        ),
+      );
+    },
+  );
+}
 
 Future<void> postData() async {
   var data = {"name": nametxt.text, 'password': passwrd.text};
   http.Response response = await http.post(
-      Uri.parse('http://192.168.10.132:8004/fetch-records/'),
+      Uri.parse('http://192.168.10.131:8004/fetch-records/'),
       body: json.encode(data),
       headers: {'Content-Type': 'application/json'});
 
@@ -162,35 +156,6 @@ Future<void> postData() async {
     print('Failed..!!');
   }
 }
-/*Future<void> checkLogin(BuildContext context, name, String password) async {
-  String url = 'http://192.168.10.132:8004/fetch-records/';
-
-  try {
-    var response = await http.post(
-      Uri.parse(url),
-      body: {
-        'username': nametxt.text,
-        'password': passwrd.text,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-
-      if (data.isNotEmpty) {
-        showMessage(context, "Signed In successfully!", true);
-      } else {
-        //_showMessage('Invalid username or password!', Colors.red);
-        showMessage(context, "Invalid username or password!", true);
-      }
-    } else {
-      showMessage(context,
-          "Failed to Fetch Data. Status: ${response.statusCode}", false);
-    }
-  } catch (e) {
-    showMessage(context, "Error: $e", false);
-  }
-}*/
 
 void showMessage(BuildContext context, String message, bool isSuccess) {
   showDialog(
@@ -211,6 +176,30 @@ void showMessage(BuildContext context, String message, bool isSuccess) {
     },
   );
 }
+
+void showMessageBox(BuildContext context, message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Warning..!!"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+bool _validateName = false;
+bool _validatePassword = false;
+bool _isObscure = true;
 
 class CurvePainter extends CustomPainter {
   @override
@@ -273,7 +262,7 @@ class _SigninState extends State<Signin> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Padding(
+        body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0.0),
             child: Align(
                 alignment: Alignment.topCenter,
@@ -332,6 +321,7 @@ class _SigninState extends State<Signin> {
                         controller: nametxt,
                         decoration: InputDecoration(
                           hintText: "Enter Name",
+                          errorText: _validateName ? 'Kindly Enter Name' : null,
                           //filled: true,
                           prefixIcon: Icon(
                             Icons.person,
@@ -350,16 +340,29 @@ class _SigninState extends State<Signin> {
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                       child: TextField(
                         controller: passwrd,
+                        obscureText: _isObscure,
                         style: TextStyle(color: Colors.grey),
                         decoration: InputDecoration(
                           hintText: "Password",
+                          errorText:
+                              _validatePassword ? 'Kindly Enter Name' : null,
                           prefixIcon: Icon(
                             Icons.lock,
                             color: Colors.grey,
                           ),
-                          suffixIcon: Icon(
-                            Icons.remove_red_eye,
-                            color: Colors.grey,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility, // Change icon
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure =
+                                    !_isObscure; // Toggle password visibility
+                              });
+                            },
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -412,7 +415,14 @@ class _SigninState extends State<Signin> {
                     ),
                     TextButton(
                         onPressed: () {
-                          checkLogin(context, nametxt, passwrd);
+                          _validateName = nametxt.text.isEmpty;
+                          _validatePassword = passwrd.text.isEmpty;
+                          if (!_validateName && !_validatePassword) {
+                            checkLogin(context, nametxt, passwrd);
+                          } else {
+                            showMessageBox(
+                                context, "Kindly Enter All Details..!!");
+                          }
                         },
                         child: Container(
                           width: 400,

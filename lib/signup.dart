@@ -84,6 +84,9 @@ Future<void> insertRecord(BuildContext context, name, email, password) async {
     if (response.statusCode == 200) {
       // Show success message
       showMessage(context, "Record inserted successfully!", true);
+      emailtxt.clear();
+      nametxt.clear();
+      passwrd.clear();
     } else {
       // Show failure message
       showMessage(context,
@@ -145,6 +148,16 @@ bool _validatePassword = false;
 bool _validateRepeatPassword = false;
 bool _validateConfirmPassword = false;
 bool _passwordsMatch = true;
+bool _isObscure = true;
+bool _isObscurer = true;
+bool _isEmailFieldFocused = false;
+
+bool isValidEmail(String email) {
+  final RegExp emailRegex = RegExp(
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+  );
+  return emailRegex.hasMatch(email);
+}
 
 // Custom clipper to define the shape
 class CustomShapeClipper extends CustomClipper<Path> {
@@ -185,7 +198,7 @@ class _SignupState extends State<Signup> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Padding(
+        body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0.0),
             child: Align(
                 alignment: Alignment.topCenter,
@@ -263,6 +276,21 @@ class _SignupState extends State<Signup> {
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                       child: TextField(
                         controller: emailtxt,
+                        onChanged: (String value) {
+                          setState(() {
+                            // Only validate email when the user starts typing or editing
+                            if (_isEmailFieldFocused) {
+                              _validateEmail =
+                                  value.isEmpty ? true : isValidEmail(value);
+                            }
+                          });
+                        },
+                        onTap: () {
+                          setState(() {
+                            _isEmailFieldFocused =
+                                true; // Mark the field as focused when the user taps on it
+                          });
+                        },
                         decoration: InputDecoration(
                           hintText: "Enter Mailid",
                           errorText:
@@ -283,6 +311,7 @@ class _SignupState extends State<Signup> {
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                       child: TextFormField(
+                        obscureText: _isObscure,
                         controller: passwrd,
                         style: TextStyle(color: Colors.grey),
                         decoration: InputDecoration(
@@ -294,9 +323,19 @@ class _SignupState extends State<Signup> {
                             Icons.lock,
                             color: Colors.grey,
                           ),
-                          suffixIcon: Icon(
-                            Icons.remove_red_eye,
-                            color: Colors.grey,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility, // Change icon
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure =
+                                    !_isObscure; // Toggle password visibility
+                              });
+                            },
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -310,6 +349,7 @@ class _SignupState extends State<Signup> {
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                       child: TextFormField(
+                        obscureText: _isObscurer,
                         controller: repeatpasswd,
                         style: TextStyle(color: Colors.grey),
                         decoration: InputDecoration(
@@ -323,9 +363,19 @@ class _SignupState extends State<Signup> {
                             Icons.lock,
                             color: Colors.grey,
                           ),
-                          suffixIcon: Icon(
-                            Icons.remove_red_eye,
-                            color: Colors.grey,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscurer
+                                  ? Icons.visibility_off
+                                  : Icons.visibility, // Change icon
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscurer =
+                                    !_isObscurer; // Toggle password visibility
+                              });
+                            },
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -347,7 +397,7 @@ class _SignupState extends State<Signup> {
                                 value: _checkbox,
                                 onChanged: (val) {
                                   setState(() {
-                                    _checkbox = val;
+                                    _checkbox = val ?? false;
                                   });
                                 }),
                             Text(
@@ -379,11 +429,13 @@ class _SignupState extends State<Signup> {
                           _validateEmail = emailtxt.text.isEmpty;
                           _validatePassword = passwrd.text.isEmpty;
                           _validateRepeatPassword = repeatpasswd.text.isEmpty;
+
                           if (!_validateName &&
                               !_validateEmail &&
                               !_validateRepeatPassword &&
                               !_validatePassword &&
-                              passwrd.text == repeatpasswd) {
+                              passwrd.text == repeatpasswd.text &&
+                              _checkbox == true) {
                             // Call the URL launcher function
                             insertRecord(
                               context,
@@ -391,9 +443,12 @@ class _SignupState extends State<Signup> {
                               emailtxt.text,
                               passwrd.text,
                             );
-                          } else if (passwrd.text != repeatpasswd) {
+                          } else if (passwrd.text != repeatpasswd.text) {
                             showMessage(context, "Passwords do not match!",
                                 false); // Error message
+                          } else if (_checkbox == false) {
+                            showMessage(context,
+                                "Kindly accept Terms and Conditions!", false);
                           } else {
                             showMessageBox(
                                 context, "Kindly Enter All Details..!!");
